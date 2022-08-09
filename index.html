@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Socket Client</title>
+</head>
+<body>
+  <p>Messages: </p>
+  <output id="messages"></output>
+  <script>
+    const messages = document.getElementById("messages");
+    const socket = new WebSocket('ws://localhost:1337');
+
+    socket.onopen = (event) => {
+      console.log('Websocket is connected!');
+      const id = Math.round(Math.random() * 100);
+      console.log('sending...', id);
+      const interval = setInterval(() => {
+        const data = JSON.stringify([
+          {
+            id,
+            name: `[${id}] Daniel Lucas`,
+            address: {
+              street: "my street",
+              number: 20 * id,
+            },
+            profession: 'developer'
+          },
+          {
+            id,
+            name: `[${id}] Lucas`,
+            address: {
+              street: "my street",
+              number: 20 * id,
+            },
+            profession: 'developer'
+          },
+          {
+            id,
+            name: `[${id}] Daniel`,
+            address: {
+              street: "my street",
+              number: 20 * id,
+            },
+            profession: 'developer'
+          }
+        ]);
+
+        socket.send(data);
+      }, 1000)      
+      
+      setTimeout(() => {
+        clearInterval(interval);
+      }, 5000);
+    };
+    socket.onmessage = (msg) => {
+      console.log('I got a message', msg.data);
+      messages.innerHTML += `<br />${msg.data}`
+    };
+    socket.onerror = (error) => console.error('Web Socket error', error);
+    socket.onclose = (event) => console.log('Disconnected from WebSocket server');
+  </script>
+</body>
+</html>
